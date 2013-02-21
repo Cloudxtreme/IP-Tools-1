@@ -1,0 +1,8 @@
+# Generated from Makefile.PL
+Makefile
+# Ignore distribution files.
+IP-Tools-/
+*.tar.gz
+# Ignore outputs of XS compilation.
+Tools.c
+Tools.bs
