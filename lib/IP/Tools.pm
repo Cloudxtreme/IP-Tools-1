@@ -21,10 +21,12 @@ require Exporter;
                    int_to_ip
                    get_ip_range
                    get_cidr
-                   $cidr_re
                    cidr_to_ip_range
                    read_whitelist
                    search_whitelist
+                   ip_range_to_cidr
+                   $cidr_re
+                   $ip_re
                /;
 
 %EXPORT_TAGS = (
@@ -35,17 +37,28 @@ use strict;
 use Carp;
 our $VERSION = 0.01;
 
+our $ip_re = qr/
+                   (?:\d+\.){3}
+                   \d+
+               /x;
+
 our $cidr_re = qr!
                      ^
                      \s*
                      (
-                         (?:\d+\.){3}\d+
+                         $ip_re
                      )
                      /
                      (\d+)
                      \s*
                      $
                  !x;
+
+sub split_ip
+{
+    my ($ip) = @_;
+    return split /\./, $ip;
+}
 
 =head2 ip_to_int
 
@@ -226,6 +239,37 @@ Sorry, I could not parse that. The range should be in a format
 EOF
     }
     return ($cidr, $error);
+}
+
+=head2 ip_range_to_cidr
+
+=cut
+
+sub ip_range_to_cidr
+{
+    my ($ip1, $ip2) = @_;
+    # Return value container.
+    my $cidr;
+    # Error container.
+    my $error;
+    # Error tolerance for floating point calculation.
+    my $eps = 0.0001;
+    my $ip1_int = ip_to_int ($ip1);
+    my $ip2_int = ip_to_int ($ip2);
+    my $base = $ip1_int;
+    my $mask = $ip2_int - $ip1_int;
+    if ($mask < 0) {
+        croak "$ip1 is greater than $ip2";
+    }
+    if ($mask == 0) {
+        return "$ip1/32";
+    }
+    my $log2mask = log ($mask + 1) / log (2);
+    if (abs ($log2mask) > abs (int $log2mask) + $eps) {
+        croak "Cannot handle non-power-of-two mask $mask";
+    }
+    $cidr = "$ip1/" . int (32 - $log2mask);
+    return $cidr;
 }
 
 =head2 read_whitelist

@@ -19,4 +19,5 @@ WriteMakefile (
             bugtracker => "$repo/issues",
         },
     },
+    EXE_FILES => ['script/iprtocidr'],
 );
