@@ -20,4 +20,14 @@ WriteMakefile (
         },
     },
     EXE_FILES => ['script/iprtocidr'],
+    OBJECT => 'Tools.o ip-tools.o',
+
+    # Export these C functions to other Perl libraries.
+
+    DL_FUNCS => {
+        'IP::Tools' => [
+            'ip_tools_ip_to_int',
+            'ip_tools_ip_range',
+        ],
+    }
 );

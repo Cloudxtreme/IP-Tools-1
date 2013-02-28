@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-IP::Tools - abstract here.
+IP::Tools - internet protocol address tools
 
 =head1 SYNOPSIS
 
@@ -13,9 +13,29 @@ IP::Tools - abstract here.
 =head1 FUNCTIONS
 
 =cut
+
 package IP::Tools;
+
+# See the following for the meaning of "dl_load_flags" and why it uses
+# DynaLoader and not XSLoader.
+
+# http://www.perlmonks.org/?node_id=691130
+
+require DynaLoader;
 require Exporter;
-@ISA = qw(Exporter);
+
+@ISA = qw(Exporter DynaLoader);
+
+our $VERSION = 0.01;
+
+__PACKAGE__->bootstrap ($VERSION);
+
+sub dl_load_flags
+{
+    return 0x01;
+}
+
+
 @EXPORT_OK = qw/
                    ip_to_int
                    int_to_ip
@@ -35,7 +55,6 @@ require Exporter;
 use warnings;
 use strict;
 use Carp;
-our $VERSION = 0.01;
 
 our $ip_re = qr/
                    (?:\d+\.){3}
@@ -68,25 +87,25 @@ Convert an IP address to an integer.
 
 =cut
 
-sub ip_to_int
-{
-    my ($ip) = @_;
-    my @bytes = split /\./, $ip;
-    if (@bytes != 4) {
-        my $n_bytes = scalar @bytes;
-        my $error = <<EOF;
-The ip address '$ip' has the wrong number of parts, $n_bytes. It
-should have four parts, like 1.2.3.4, separated by dots.
-EOF
-        return (-1, $error);
-    }
-    my $val = 0;
-    for (@bytes) {
-        $val *= 0x100;
-        $val += $_;
-    }
-    return $val;
-}
+# sub ip_to_int
+# {
+#     my ($ip) = @_;
+#     my @bytes = split /\./, $ip;
+#     if (@bytes != 4) {
+#         my $n_bytes = scalar @bytes;
+#         my $error = <<EOF;
+# The ip address '$ip' has the wrong number of parts, $n_bytes. It
+# should have four parts, like 1.2.3.4, separated by dots.
+# EOF
+#         return (-1, $error);
+#     }
+#     my $val = 0;
+#     for (@bytes) {
+#         $val *= 0x100;
+#         $val += $_;
+#     }
+#     return $val;
+# }
 
 =head2 int_to_ip
 
