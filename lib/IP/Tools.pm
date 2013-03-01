@@ -10,6 +10,8 @@ IP::Tools - internet protocol address tools
 
 =head1 DESCRIPTION
 
+Do not use this module.
+
 =head1 FUNCTIONS
 
 =cut
@@ -26,7 +28,7 @@ require Exporter;
 
 @ISA = qw(Exporter DynaLoader);
 
-our $VERSION = 0.01;
+our $VERSION = 0.02;
 
 __PACKAGE__->bootstrap ($VERSION);
 
